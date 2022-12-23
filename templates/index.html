@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"
+      integrity="sha512-YeeA/Qxn5hYdkukScTCNNOhTrv1C2RubAGButJ1rmgQwZf/HdRaCGl+JAVkqsqaNRaYNHdheiuKKuPf9mDcqKg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <script>
+      window.addEventListener("load", () => {
+        const socket = io.connect();
+        console.log("幹");
+
+        const send = document.getElementById("send");
+        const message = document.getElementById("message");
+        const username = document.getElementById("username");
+        send.addEventListener("click", () => {
+          socket.emit("send", `${username.value} : ${message.value}`);
+          message.value = "";
+          username.value = "";
+        });
+
+        const chatContent = document.getElementById("chat_content");
+        socket.on("get", function (data) {
+          const myText = document.createElement("p");
+          myText.textContent = `${data}`;
+          chatContent.appendChild(myText);
+        });
+
+        socket.on("message", function (data) {
+          const systemText = document.createElement("p");
+          systemText.textContent = `System: ${data}`;
+          chatContent.appendChild(systemText);
+        });
+
+        const test = document.getElementById("test");
+        test.addEventListener("click", function (e) {
+          socket.emit("test");
+        });
+      });
+    </script>
+    <h1>Hello</h1>
+    <h2>WebSocket test</h2>
+    <form>
+      <fieldset>
+        <legend>Message</legend>
+        <input type="text" id="message" name="message" />
+        <input type="text" id="username" name="username" />
+        <input type="button" id="send" value="Send" />
+        <input type="button" id="test" value="Test" />
+      </fieldset>
+    </form>
+    <hr />
+    <div id="chat_content"></div>
+  </body>
+</html>
